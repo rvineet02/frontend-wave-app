@@ -2,7 +2,7 @@ import './App.css';
 import React, { useEffect, useState } from 'react';
 import { ethers } from "ethers";
 import abi from './utils/WavePortal.json';
-
+import Spinner from './component/Spinner';
 
 function App() {
 
@@ -73,26 +73,24 @@ function App() {
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrived total wave count...", count.toNumber());
         setTotalWaves(count.toNumber());
-
       // executing actual wave from smart contract 
-      const waveTxn = await wavePortalContract.wave();
-      console.log("mining...", waveTxn.hash);
-      setLoadingState(true);
-      console.log("Loading State", loadingState);
-      // if(loadingState == true) {
-      //   console.log("Loading State is TRUE")
-      // }
+        setLoadingState(true);
+        const waveTxn = await wavePortalContract.wave();
+        console.log("mining...", waveTxn.hash);
 
-      await waveTxn.wait();
-      console.log("Mined --", waveTxn.hash);
-      count = await wavePortalContract.getTotalWaves();
-      console.log("Got total wave count...", count.toNumber());
-      setTotalWaves(count.toNumber());
+        await waveTxn.wait();
+        setLoadingState(false);
+        console.log("Mined --", waveTxn.hash);
+
+        count = await wavePortalContract.getTotalWaves();
+        console.log("Got total wave count...", count.toNumber());
+        setTotalWaves(count.toNumber());
       } else {
         console.log("Ethereum object doesnt exist");
       }
     } catch (error) {
-      console.log(error)
+      setLoadingState(false)
+      console.log("Error: ", error)
     }
   }
 
@@ -106,19 +104,30 @@ function App() {
           Connect your Ethereum Wallet and Wave at me!
         </div>
 
-        <button className="waveButton" onClick={wave}>
-          Wave at me
-        </button>
-        {!currentAccount && (
-          <button className="waveButton" onClick={connectWallet}>
+        {!loadingState && (
+            <button className="button-51" onClick={wave}>
+              Wave at me
+            </button>
+        )}
+        
+
+        
+        
+        {!currentAccount &&  (
+          <button className="button-51" onClick={connectWallet}>
             Connect Wallet
           </button>
         )}
-        <div className="bio">
-          Total Number of Waves: {totalWaves}
-        </div>
-
       </div>
+
+        {loadingState && ( <Spinner />)}
+        
+        {!loadingState && (
+          <div className="totalCount">
+          Total Number of Waves: {totalWaves}
+          </div>
+        )}
+
     </div>
 
   );
