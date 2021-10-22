@@ -9,8 +9,9 @@ function App() {
   const [currentAccount, setCurrentAccount] = useState("");
   const [totalWaves, setTotalWaves] = useState(0);
   const [loadingState, setLoadingState] = useState(false);
+  const [allWaves, setAllWaves] = useState([]);
 
-  const contractAddress = "0xF9C1D356D8815b5EBa8fa3A4a41857eB3da0d492";
+  const contractAddress = "0x8EfE0B65C62C208Fc2E43F3B598525142cE53f3b";
   const contractABI = abi.abi;
 
   const checkWalletConnection =  async () => {
@@ -40,7 +41,27 @@ function App() {
 
   useEffect( () => {
     checkWalletConnection();
-  }, []) 
+    const numberOfWaves = async () => {
+      try{
+        const { ethereum } = window;
+        if (ethereum) {
+          const provider = new ethers.providers.Web3Provider(ethereum);
+          const signer = provider.getSigner();
+          const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+  
+          let count = await wavePortalContract.getTotalWaves();
+          console.log("Retrived total wave count...", count.toNumber());
+          setTotalWaves(count.toNumber());
+        } else {
+          console.log("eth obj not found");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    numberOfWaves();
+  }, [contractABI]) 
 
   const connectWallet = async () => {
     try {
@@ -75,7 +96,7 @@ function App() {
         setTotalWaves(count.toNumber());
       // executing actual wave from smart contract 
         setLoadingState(true);
-        const waveTxn = await wavePortalContract.wave();
+        const waveTxn = await wavePortalContract.wave("This is a message"); // update for message
         console.log("mining...", waveTxn.hash);
 
         await waveTxn.wait();
@@ -94,6 +115,36 @@ function App() {
     }
   }
 
+  const getAllWaves = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        // call method from contract 
+        const waves = await wavePortalContract.getAllWaves();
+
+        // santizing data from waves struct in contract 
+        let wavesFinal = [];
+        waves.forEach(wave => {
+          wavesFinal.push({
+            address: wave.waver, 
+            timestamp: new Date(wave.timestamp*1000),
+            message: wave.message
+          });
+        });
+        setAllWaves(wavesFinal);
+      } else{
+        console.log("Eth Obj doesnt exist");
+      }      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   return (
     <div className="mainContainer">
       <div className="dataContainer">
@@ -110,9 +161,6 @@ function App() {
             </button>
         )}
         
-
-        
-        
         {!currentAccount &&  (
           <button className="button-51" onClick={connectWallet}>
             Connect Wallet
@@ -127,6 +175,17 @@ function App() {
           Total Number of Waves: {totalWaves}
           </div>
         )}
+
+        {allWaves.map( (curr, index) => {
+          return (
+            <div key={index} style= {{backgroundColor: "OldLace", marginTop: "16px", padding: "8px"}}>
+              <div> Address: {curr.address} </div>
+              <div> Time: {curr.timestamp.toString()} </div>
+              <div> Message: {curr.message} </div>
+            </div>
+          )
+
+        })}
 
     </div>
 
