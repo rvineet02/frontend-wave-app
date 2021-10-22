@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { ethers } from "ethers";
 import abi from './utils/WavePortal.json';
 import Spinner from './component/Spinner';
-import Modal from './component/Modal';
+// import Modal from './component/Modal';
 
 function App() {
 
@@ -63,7 +63,7 @@ function App() {
     }
 
     numberOfWaves();
-  }, [contractABI]) 
+  },) 
 
   const connectWallet = async () => {
     try {
