@@ -20,7 +20,6 @@ function App() {
     try{
       const { ethereum } = window;
       if (!ethereum) {
-        <Modal />
         console.log("Make Sure MetaMask wallet is connected");
         return;
       } else {
@@ -114,7 +113,6 @@ function App() {
       }
     } catch (error) {
         setLoadingState(false);
-        <Modal />
         console.log("Error: ", error)
     }
   }
