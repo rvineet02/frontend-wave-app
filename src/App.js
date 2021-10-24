@@ -11,7 +11,7 @@ function App() {
   const [totalWaves, setTotalWaves] = useState(0);
   const [loadingState, setLoadingState] = useState(false);
   const [allWaves, setAllWaves] = useState([]);
-  const [newMessage, setNewMessage] = useState("test test");
+  const [newMessage, setNewMessage] = useState("Paste Link Here");
 
   const contractAddress = "0x8EfE0B65C62C208Fc2E43F3B598525142cE53f3b";
   const contractABI = abi.abi;
@@ -167,7 +167,7 @@ function App() {
         👋 Hey there!
         </div>
         <div className="bio">
-          Connect your Ethereum Wallet and Wave at me!
+          Connect your Ethereum Wallet and share your favorite spotify playlist!
         </div>
 
     {/* testing */}
@@ -181,7 +181,7 @@ function App() {
     )}
 
     {!loadingState && (
-        <div>
+        <div className="button">
             <button className="button-51" onClick={wave}>
               Wave at me
             </button>
