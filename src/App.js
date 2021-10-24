@@ -11,6 +11,7 @@ function App() {
   const [totalWaves, setTotalWaves] = useState(0);
   const [loadingState, setLoadingState] = useState(false);
   const [allWaves, setAllWaves] = useState([]);
+  const [newMessage, setNewMessage] = useState("test test");
 
   const contractAddress = "0x8EfE0B65C62C208Fc2E43F3B598525142cE53f3b";
   const contractABI = abi.abi;
@@ -63,7 +64,7 @@ function App() {
     }
 
     numberOfWaves();
-  },) 
+  },[contractABI]) 
 
   const connectWallet = async () => {
     try {
@@ -85,6 +86,7 @@ function App() {
 
 
   const wave = async () => {
+    console.log("Entering Wave");
     try {
       const { ethereum } = window;
       if (ethereum) {
@@ -98,7 +100,7 @@ function App() {
         setTotalWaves(count.toNumber());
       // executing actual wave from smart contract 
         setLoadingState(true);
-        const waveTxn = await wavePortalContract.wave("This is a message"); // update for message
+        const waveTxn = await wavePortalContract.wave(newMessage); // update for message
         console.log("mining...", waveTxn.hash);
 
         await waveTxn.wait();
@@ -146,6 +148,17 @@ function App() {
     }
   }
 
+  // handling changing values in input
+  const handleMessageChange = (event) => {
+    console.log(event.target.value);
+    setNewMessage(event.target.value);
+  }
+
+
+  // const addMessage = (event) => {
+  //   event.preventDefault();
+  //   console.log("button clicked", newMessage);
+  // }
 
   return (
     <div className="mainContainer">
@@ -157,12 +170,24 @@ function App() {
           Connect your Ethereum Wallet and Wave at me!
         </div>
 
-        {!loadingState && (
+    {/* testing */}
+
+    {!loadingState && (
+      <div> 
+        <form>
+          <input value={newMessage}  onChange={handleMessageChange} id="linkField"></input>
+        </form>
+      </div>
+    )}
+
+    {!loadingState && (
+        <div>
             <button className="button-51" onClick={wave}>
               Wave at me
             </button>
-        )}
-        
+        </div>
+    )}
+
         {!currentAccount &&  (
           <button className="button-51" onClick={connectWallet}>
             Connect Wallet
@@ -172,7 +197,7 @@ function App() {
 
         {loadingState && ( <Spinner />)}
         
-        {!loadingState && (
+        {!loadingState && currentAccount && (
           <div className="totalCount">
           Total Number of Waves: {totalWaves}
           </div>
@@ -186,8 +211,9 @@ function App() {
               <div> Message: {curr.message} </div>
             </div>
           )
-
         })}
+
+
 
     </div>
 

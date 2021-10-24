@@ -25,6 +25,13 @@
   margin-top: 16px;
 }
 
+#linkField {
+  margin: 35px;
+  padding: 10px;
+  height: 25px;
+  width: 450px;
+}
+
 .waveButton {
   cursor: pointer;
   margin-top: 16px;
